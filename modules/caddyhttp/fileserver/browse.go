@@ -44,7 +44,7 @@ type Browse struct {
 	TemplateFile string `json:"template_file,omitempty"`
 }
 
-func (fsrv *FileServer) serveBrowse(root, dirPath string, w http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
+func (fsrv *FileServer) serveBrowse(root, count, dirPath string, w http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
 	fsrv.logger.Debug("browse enabled; listing directory contents",
 		zap.String("path", dirPath),
 		zap.String("root", root))
@@ -83,7 +83,7 @@ func (fsrv *FileServer) serveBrowse(root, dirPath string, w http.ResponseWriter,
 	repl := r.Context().Value(caddy.ReplacerCtxKey).(*caddy.Replacer)
 
 	// calling path.Clean here prevents weird breadcrumbs when URL paths are sketchy like /%2e%2e%2f
-	listing, err := fsrv.loadDirectoryContents(r.Context(), dir.(fs.ReadDirFile), root, path.Clean(r.URL.Path), repl)
+	listing, err := fsrv.loadDirectoryContents(r.Context(), dir.(fs.ReadDirFile), root, count, path.Clean(r.URL.Path), repl)
 	switch {
 	case os.IsPermission(err):
 		return caddyhttp.Error(http.StatusForbidden, err)
@@ -137,8 +137,8 @@ func (fsrv *FileServer) serveBrowse(root, dirPath string, w http.ResponseWriter,
 	return nil
 }
 
-func (fsrv *FileServer) loadDirectoryContents(ctx context.Context, dir fs.ReadDirFile, root, urlPath string, repl *caddy.Replacer) (browseTemplateContext, error) {
-	files, err := dir.ReadDir(10000) // TODO: this limit should probably be configurable
+func (fsrv *FileServer) loadDirectoryContents(ctx context.Context, dir fs.ReadDirFile, root, count, urlPath string, repl *caddy.Replacer) (browseTemplateContext, error) {
+	files, err := dir.ReadDir(count) // TODO: this limit should probably be configurable
 	if err != nil && err != io.EOF {
 		return browseTemplateContext{}, err
 	}

@@ -99,7 +99,10 @@ func parseCaddyfile(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler, error)
 				if !h.Args(&fsrv.Root) {
 					return nil, h.ArgErr()
 				}
-
+			case "count":
+				if !h.Args(&fsrv.Count) {
+					return nil, h.ArgErr()
+				}
 			case "browse":
 				if fsrv.Browse != nil {
 					return nil, h.Err("browsing is already configured")
