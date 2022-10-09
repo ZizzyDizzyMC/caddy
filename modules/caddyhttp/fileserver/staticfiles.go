@@ -154,7 +154,7 @@ type FileServer struct {
 	PrecompressedOrder []string `json:"precompressed_order,omitempty"`
 	precompressors     map[string]encode.Precompressed
 
-	Count  int `json:"count_limit,omitempty"`
+	Count  int `json:"count,omitempty"`
 	logger *zap.Logger
 }
 

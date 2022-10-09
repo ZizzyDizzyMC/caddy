@@ -69,6 +69,7 @@ func cmdFileServer(fs caddycmd.Flags) (int, error) {
 
 	domain := fs.String("domain")
 	root := fs.String("root")
+	count := fs.Int("count")
 	listen := fs.String("listen")
 	browse := fs.Bool("browse")
 	templates := fs.Bool("templates")
@@ -81,12 +82,11 @@ func cmdFileServer(fs caddycmd.Flags) (int, error) {
 		handler := caddytpl.Templates{FileRoot: root}
 		handlers = append(handlers, caddyconfig.JSONModuleObject(handler, "handler", "templates", nil))
 	}
+	handler := FileServer{Root: root, Count: count}
 
-	handler := FileServer{Root: root}
 	if browse {
 		handler.Browse = new(Browse)
 	}
-
 	handlers = append(handlers, caddyconfig.JSONModuleObject(handler, "handler", "file_server", nil))
 
 	route := caddyhttp.Route{HandlersRaw: handlers}
