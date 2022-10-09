@@ -53,6 +53,7 @@ respond with a file listing.`,
 			fs := flag.NewFlagSet("file-server", flag.ExitOnError)
 			fs.String("domain", "", "Domain name at which to serve the files")
 			fs.String("root", "", "The path to the root of the site")
+			fs.Int("count", 20000, "The limit of how many files to autoindex")
 			fs.String("listen", "", "The address to which to bind the listener")
 			fs.Bool("browse", false, "Enable directory browsing")
 			fs.Bool("templates", false, "Enable template rendering")
@@ -68,6 +69,7 @@ func cmdFileServer(fs caddycmd.Flags) (int, error) {
 
 	domain := fs.String("domain")
 	root := fs.String("root")
+	count := fs.Int("count")
 	listen := fs.String("listen")
 	browse := fs.Bool("browse")
 	templates := fs.Bool("templates")
