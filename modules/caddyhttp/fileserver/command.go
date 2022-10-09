@@ -69,7 +69,6 @@ func cmdFileServer(fs caddycmd.Flags) (int, error) {
 
 	domain := fs.String("domain")
 	root := fs.String("root")
-	count := fs.Int("count")
 	listen := fs.String("listen")
 	browse := fs.Bool("browse")
 	templates := fs.Bool("templates")
