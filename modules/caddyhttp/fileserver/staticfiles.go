@@ -154,6 +154,7 @@ type FileServer struct {
 	PrecompressedOrder []string `json:"precompressed_order,omitempty"`
 	precompressors     map[string]encode.Precompressed
 
+	Count  int `json:"count_limit,omitempty"`
 	logger *zap.Logger
 }
 
@@ -180,8 +181,8 @@ func (fsrv *FileServer) Provision(ctx caddy.Context) error {
 	if fsrv.fileSystem == nil {
 		fsrv.fileSystem = osFS{}
 	}
-	if fsrv.Count == nil {
-		fsrv.Count = 20000
+	if fsrv.Count == 0 {
+		fsrv.Count = 10000
 	}
 
 	if fsrv.Root == "" {
@@ -240,7 +241,6 @@ func (fsrv *FileServer) ServeHTTP(w http.ResponseWriter, r *http.Request, next c
 	root := repl.ReplaceAll(fsrv.Root, ".")
 
 	filename := caddyhttp.SanitizedPathJoin(root, r.URL.Path)
-	count := fsrv.Count
 	fsrv.logger.Debug("sanitized path join",
 		zap.String("site_root", root),
 		zap.String("request_path", r.URL.Path),
@@ -301,7 +301,7 @@ func (fsrv *FileServer) ServeHTTP(w http.ResponseWriter, r *http.Request, next c
 			zap.String("path", filename),
 			zap.Strings("index_filenames", fsrv.IndexNames))
 		if fsrv.Browse != nil && !fileHidden(filename, filesToHide) {
-			return fsrv.serveBrowse(root, count, filename, w, r, next)
+			return fsrv.serveBrowse(root, filename, w, r, next)
 		}
 		return fsrv.notFound(w, r, next)
 	}

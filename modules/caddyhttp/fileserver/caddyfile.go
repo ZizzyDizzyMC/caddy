@@ -100,8 +100,8 @@ func parseCaddyfile(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler, error)
 					return nil, h.ArgErr()
 				}
 			case "count":
-				if !h.Args(&fsrv.Count) {
-					return nil, h.ArgErr()
+				if fsrv.Count == 0 {
+					fsrv.Count = 10000
 				}
 			case "browse":
 				if fsrv.Browse != nil {
